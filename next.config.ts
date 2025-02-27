@@ -1,10 +1,6 @@
 import withPWA from 'next-pwa';
 
-const nextConfig = {
-  experimental: {
-    appDir: true
-  }
-};
+const nextConfig = {};
 
 export default withPWA({
   dest: 'public',
