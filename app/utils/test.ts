@@ -26,16 +26,20 @@ export const sendTestNotification = async (message: string = 'Hello from Pure Ap
       },
       body: JSON.stringify({
         subscription: savedSubscription,
-        message: message
+        message: message,
+        timestamp: new Date().toISOString() // Add timestamp for unique notifications
       }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send notification');
+      const errorData = await response.json();
+      throw new Error(`Failed to send notification: ${errorData.error || response.statusText}`);
     }
 
-    console.log('Notification sent successfully');
+    const result = await response.json();
+    console.log('Notification response:', result);
   } catch (error) {
     console.error('Error sending notification:', error);
+    throw error;
   }
 };

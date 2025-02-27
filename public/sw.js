@@ -1,24 +1,38 @@
 self.addEventListener('push', function(event) {
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/vercel.svg',
-    badge: '/vercel.svg',
-    vibrate: [200, 100, 200],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    }
-  };
+  try {
+    const data = JSON.parse(event.data.text());
+    
+    const options = {
+      body: data.body,
+      icon: '/vercel.svg',
+      badge: '/vercel.svg',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        url: self.location.origin,
+      },
+      actions: [
+        {
+          action: 'open',
+          title: 'Open App'
+        }
+      ]
+    };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
+  } catch (error) {
+    console.error('Error showing notification:', error);
+  }
 });
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/')
-  );
+
+  if (event.action === 'open') {
+    event.waitUntil(
+      clients.openWindow(event.notification.data.url)
+    );
+  }
 });
